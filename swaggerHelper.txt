@@ -1,0 +1,122 @@
+// swagger.json
+// swagger.json
+{
+  "swaggerDefinition": {
+    "info": {
+      "title": "Your API",
+      "version": "1.0.0",
+      "description": "API documentation for Your API"
+    },
+    "basePath": "/api"
+  },
+  "apis": ["./src/routes/*.ts"],
+  "definitions": "./src/swagger-definitions.ts"
+}
+
+
+
+npm install express swagger-jsdoc swagger-ui-express
+
+
+
+
+
+
+// src/swagger.ts
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import express from 'express';
+
+const router = express.Router();
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'Your API',
+      version: '1.0.0',
+      description: 'API documentation for Your API',
+    },
+  },
+  apis: ['./src/routes/*.ts'],
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+
+router.use('/docs', swaggerUi.serve);
+router.get('/docs', swaggerUi.setup(swaggerSpec));
+
+export default router;
+
+
+
+
+
+
+
+
+// src/routes/userRoutes.ts
+import express from 'express';
+import userController from '../controllers/userController';
+
+const router = express.Router();
+
+/**
+ * @swagger
+ * /api/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         description: User data for registration
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/User'
+ *     responses:
+ *       200:
+ *         description: User registered successfully
+ */
+router.post('/signup', userController.signup);
+
+/**
+ * @swagger
+ * /api/login:
+ *   post:
+ *     summary: Login to the application
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - name: body
+ *         in: body
+ *         description: User credentials for login
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/UserLogin'
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ */
+router.post('/login', userController.login);
+
+/**
+ * @swagger
+ * /api/user/{id}:
+ *   get:
+ *     summary: Get user information by ID
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: User ID
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: User information retrieved successfully
+ */
+router.get('/user/:id', userController.getUserInfo);
+
+export default router;
